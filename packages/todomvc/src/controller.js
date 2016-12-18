@@ -1,4 +1,5 @@
 import {Controller} from 'cerebral'
+import {state, input} from 'cerebral/operators' // eslint-disable-line no-unused-vars
 import Devtools from 'cerebral/devtools'
 import Router from 'cerebral-router'
 import {RecorderProvider} from 'cerebral/providers'
@@ -8,18 +9,24 @@ import Recorder from './modules/recorder'
 const controller = Controller({
   options: {strictRender: true},
   devtools: Devtools({
-    remoteDebugger: 'localhost:8585'
-  }),
-  router: Router({
-    onlyHash: true,
-    routes: {
-      '/': 'app.rootRouted',
-      '/:filter': 'app.filterClicked'
-    }
+    // remoteDebugger: 'localhost:8585'
   }),
   providers: [RecorderProvider()],
   modules: {
     app: App,
+    router: Router({
+      onlyHash: true,
+      filterFalsy: true,
+      routes: [
+        {path: '/', signal: 'app.rootRouted'},
+        // simple map to signal. all parsed path and queries params goes to signal
+        {path: '/:filter', signal: 'app.filterClicked'}
+        // map to signal + state
+        // {path: '/:filterName', signal: 'app.filterClicked', map: {filterName: input`filter`, title: state`app.newTodoTitle`}}
+        // map to state only.
+        // {path: '/:filterName', map: {filterName: state`app.filter`, title: state`app.newTodoTitle`}}
+      ]
+    }),
     recorder: Recorder
   }
 })

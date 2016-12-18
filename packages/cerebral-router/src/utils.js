@@ -1,14 +1,10 @@
-function isObject (obj) {
-  return typeof obj === 'object' && !Array.isArray(obj) && obj !== null
-}
-
 export function flattenConfig (config, prev = '') {
-  return Object.keys(config).reduce((flattened, key) => {
-    if (isObject(config[key])) {
-      return Object.assign(flattened, flattenConfig(config[key], prev + key))
+  return config.reduce((flattened, {path, signal, map, routes}) => {
+    if (Array.isArray(routes)) {
+      return Object.assign(flattened, flattenConfig(routes, prev + path))
     }
 
-    flattened[prev + key] = config[key]
+    flattened[prev + path] = {signal, map}
 
     return flattened
   }, {})
@@ -16,21 +12,28 @@ export function flattenConfig (config, prev = '') {
 
 export function getRoutableSignals (config, controller) {
   return Object.keys(config).reduce((routableSignals, route) => {
-    const signal = controller.getSignal(config[route])
+    const {signal: signalName, map} = config[route]
 
-    if (!signal) {
-      throw new Error(`Cerebral router - The signal ${config[route]} for the route ${route} does not exist.`)
+    if (!signalName) {
+      return routableSignals
     }
 
-    if (routableSignals[config[route]]) {
-      throw new Error(`Cerebral router - The signal ${config[route]} has already been bound to route ${route}. Create a new signal and reuse actions instead if needed.`)
+    if (routableSignals[signalName]) {
+      throw new Error(`Cerebral router - The signal ${signalName} has already been bound to route ${route}. Create a new signal and reuse actions instead if needed.`)
     }
 
-    routableSignals[config[route]] = {
-      route: route,
-      signal: signal
+    routableSignals[signalName] = {
+      route,
+      map,
+      signal: controller.getSignal(signalName)
     }
 
     return routableSignals
   }, {})
+}
+
+export function getPath (object, path) {
+  return path.split('.').reduce((currentPath, key) => {
+    return currentPath ? currentPath[key] : undefined
+  }, object)
 }

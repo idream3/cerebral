@@ -166,7 +166,7 @@ describe('React', () => {
     })
   })
   describe('connect', () => {
-    it('should log with devtools when component state/signals more than devtools', () => {
+    /* it('should log with devtools when component state/signals more than devtools', () => {
       const controller = Controller({
         devtools: {bigComponentsWarning: {state: 1, signals: 1}, init () {}, send () {}, updateComponentsMap () {}},
         state: {
@@ -221,7 +221,7 @@ describe('React', () => {
         </Container>
       ))
       // how to get hasWarnedBigComponent or console.log??
-    })
+    }) */
     it('should be able to remove computed from depsMap after unmounting component', () => {
       const controller = Controller({
         state: {
@@ -646,7 +646,7 @@ describe('React', () => {
       })
       const tree = TestUtils.renderIntoDocument((
         <Container controller={controller}>
-          <TestComponent currentUser={ 0 } changedUserSignalName='changedUser'/>
+          <TestComponent currentUser={0} changedUserSignalName='changedUser' />
         </Container>
       ))
 

@@ -21,13 +21,6 @@ describe('Tags', () => {
     const stateObject = {foo: {baz: 'mip'}, bar: 'baz'}
     assert.equal(tag.getValue({state: stateObject}), 'mip')
   })
-  it('should throw when invalid tag composition', () => {
-    const tag = state`foo.${null}`
-    const stateObject = {foo: 'bar'}
-    assert.throws(() => {
-      tag.getValue({state: stateObject})
-    })
-  })
   it('should throw when invalid tag is used', () => {
     const tag = state`foo.${null}`
     assert.throws(() => {
